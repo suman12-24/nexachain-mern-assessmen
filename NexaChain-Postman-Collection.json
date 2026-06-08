@@ -1,0 +1,362 @@
+{
+  "info": {
+    "_postman_id": "nexachain-ai-collection-v1",
+    "name": "NexaChain AI — Investment & Referral Platform",
+    "description": "Complete API collection for NexaChain AI MERN Stack platform.\n\nBase URL: http://localhost:5000/api\n\nAuth: After login/register, copy the token and set it in the collection variable `token`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api", "type": "string" },
+    { "key": "token",   "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "var json = pm.response.json();",
+            "if (json.token) { pm.collectionVariables.set('token', json.token); }",
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('Has token', () => pm.expect(json.token).to.be.a('string'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Rahul Kumar\",\n  \"email\": \"rahul@example.com\",\n  \"mobile\": \"9876543210\",\n  \"password\": \"Secure@123\",\n  \"referralCode\": \"\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          },
+          "response": [{
+            "name": "Success 201",
+            "status": "Created",
+            "code": 201,
+            "body": "{\n  \"success\": true,\n  \"message\": \"Registration successful\",\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": \"64abc123def456\",\n    \"fullName\": \"Rahul Kumar\",\n    \"email\": \"rahul@example.com\",\n    \"referralCode\": \"AB12CD34\",\n    \"walletBalance\": 0\n  }\n}"
+          }]
+        },
+        {
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "var json = pm.response.json();",
+            "if (json.token) { pm.collectionVariables.set('token', json.token); }",
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has token', () => pm.expect(json.token).to.be.a('string'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rahul@example.com\",\n  \"password\": \"Secure@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          },
+          "response": [
+            {
+              "name": "Success 200",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login successful\",\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": \"64abc123\",\n    \"fullName\": \"Rahul Kumar\",\n    \"email\": \"rahul@example.com\",\n    \"referralCode\": \"AB12CD34\",\n    \"walletBalance\": 0,\n    \"totalRoiEarned\": 0,\n    \"totalLevelIncomeEarned\": 0\n  }\n}"
+            },
+            {
+              "name": "Invalid Credentials 401",
+              "status": "Unauthorized",
+              "code": 401,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Invalid email or password\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Current User (Me)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has user', () => pm.expect(pm.response.json().user).to.be.an('object'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          },
+          "response": [{
+            "name": "Success 200",
+            "status": "OK",
+            "code": 200,
+            "body": "{\n  \"success\": true,\n  \"user\": {\n    \"_id\": \"64abc123\",\n    \"fullName\": \"Rahul Kumar\",\n    \"email\": \"rahul@example.com\",\n    \"mobile\": \"9876543210\",\n    \"referralCode\": \"AB12CD34\",\n    \"referredBy\": null,\n    \"walletBalance\": 500,\n    \"totalRoiEarned\": 25,\n    \"totalLevelIncomeEarned\": 0,\n    \"accountStatus\": \"active\"\n  }\n}"
+          }]
+        }
+      ]
+    },
+    {
+      "name": "Investments",
+      "item": [
+        {
+          "name": "Get Available Plans",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has plans', () => pm.expect(pm.response.json().plans).to.be.an('object'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/investments/plans", "host": ["{{baseUrl}}"], "path": ["investments", "plans"] }
+          },
+          "response": [{
+            "name": "Success 200",
+            "status": "OK",
+            "code": 200,
+            "body": "{\n  \"success\": true,\n  \"plans\": {\n    \"silver\":  { \"name\": \"Silver Plan\",  \"durationDays\": 30, \"minAmount\": 100,   \"maxAmount\": 9999,   \"dailyRoi\": 1.0 },\n    \"gold\":    { \"name\": \"Gold Plan\",    \"durationDays\": 60, \"minAmount\": 10000, \"maxAmount\": 49999,  \"dailyRoi\": 1.5 },\n    \"diamond\": { \"name\": \"Diamond Plan\", \"durationDays\": 90, \"minAmount\": 50000, \"maxAmount\": 999999, \"dailyRoi\": 2.0 }\n  }\n}"
+          }]
+        },
+        {
+          "name": "Create Investment",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 201', () => pm.response.to.have.status(201));",
+            "pm.test('Has investment', () => pm.expect(pm.response.json().investment).to.be.an('object'));",
+            "var json = pm.response.json();",
+            "if (json.investment) { pm.collectionVariables.set('investmentId', json.investment._id); }"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planKey\": \"silver\",\n  \"amount\": 500\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/investments", "host": ["{{baseUrl}}"], "path": ["investments"] }
+          },
+          "response": [
+            {
+              "name": "Success 201",
+              "status": "Created",
+              "code": 201,
+              "body": "{\n  \"success\": true,\n  \"message\": \"Investment created successfully\",\n  \"investment\": {\n    \"_id\": \"inv123abc\",\n    \"user\": \"64abc123\",\n    \"amount\": 500,\n    \"planDetails\": {\n      \"name\": \"Silver Plan\",\n      \"durationDays\": 30,\n      \"minAmount\": 100,\n      \"maxAmount\": 9999\n    },\n    \"dailyRoiPercentage\": 1,\n    \"startDate\": \"2026-06-08T00:00:00.000Z\",\n    \"endDate\": \"2026-07-08T00:00:00.000Z\",\n    \"totalRoiPaid\": 0,\n    \"status\": \"active\"\n  }\n}"
+            },
+            {
+              "name": "Invalid Amount 400",
+              "status": "Bad Request",
+              "code": 400,
+              "body": "{\n  \"success\": false,\n  \"message\": \"Amount must be between ₹100 and ₹9,999 for Silver Plan\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get My Investments (All)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has investments array', () => pm.expect(pm.response.json().investments).to.be.an('array'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/investments?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["investments"],
+              "query": [
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          },
+          "response": [{
+            "name": "Success 200",
+            "status": "OK",
+            "code": 200,
+            "body": "{\n  \"success\": true,\n  \"total\": 2,\n  \"page\": 1,\n  \"pages\": 1,\n  \"investments\": [\n    {\n      \"_id\": \"inv123abc\",\n      \"amount\": 500,\n      \"planDetails\": { \"name\": \"Silver Plan\", \"durationDays\": 30 },\n      \"dailyRoiPercentage\": 1,\n      \"totalRoiPaid\": 5,\n      \"startDate\": \"2026-06-08T00:00:00.000Z\",\n      \"endDate\": \"2026-07-08T00:00:00.000Z\",\n      \"status\": \"active\"\n    }\n  ]\n}"
+          }]
+        },
+        {
+          "name": "Get My Investments (Active only)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/investments?status=active",
+              "host": ["{{baseUrl}}"],
+              "path": ["investments"],
+              "query": [{ "key": "status", "value": "active" }]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "var json = pm.response.json();",
+            "pm.test('Has walletBalance', () => pm.expect(json.dashboard.walletBalance).to.be.a('number'));",
+            "pm.test('Has totalRoiEarned', () => pm.expect(json.dashboard.totalRoiEarned).to.be.a('number'));",
+            "pm.test('Has totalLevelIncomeEarned', () => pm.expect(json.dashboard.totalLevelIncomeEarned).to.be.a('number'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/dashboard", "host": ["{{baseUrl}}"], "path": ["dashboard"] }
+          },
+          "response": [{
+            "name": "Success 200",
+            "status": "OK",
+            "code": 200,
+            "body": "{\n  \"success\": true,\n  \"dashboard\": {\n    \"walletBalance\": 530,\n    \"totalRoiEarned\": 5,\n    \"totalLevelIncomeEarned\": 25,\n    \"investments\": {\n      \"active\": 1,\n      \"completed\": 0,\n      \"cancelled\": 0,\n      \"totalInvested\": 500\n    },\n    \"recentRoi\": [\n      { \"_id\": \"roi123\", \"amount\": 5, \"date\": \"2026-06-08T00:00:00.000Z\", \"status\": \"credited\", \"investment\": { \"planDetails\": { \"name\": \"Silver Plan\" }, \"amount\": 500 } }\n    ],\n    \"recentReferralIncome\": [\n      { \"_id\": \"ref123\", \"amount\": 25, \"level\": 1, \"date\": \"2026-06-08T00:00:00.000Z\", \"generator\": { \"fullName\": \"erewr\", \"email\": \"ayan@gmail.com\" } }\n    ]\n  }\n}"
+          }]
+        },
+        {
+          "name": "Get ROI History",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has records', () => pm.expect(pm.response.json().records).to.be.an('array'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/roi-history?page=1&limit=30",
+              "host": ["{{baseUrl}}"],
+              "path": ["roi-history"],
+              "query": [
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "30" }
+              ]
+            }
+          },
+          "response": [{
+            "name": "Success 200",
+            "status": "OK",
+            "code": 200,
+            "body": "{\n  \"success\": true,\n  \"total\": 1,\n  \"page\": 1,\n  \"records\": [\n    {\n      \"_id\": \"roi123abc\",\n      \"user\": \"64abc123\",\n      \"investment\": {\n        \"_id\": \"inv123abc\",\n        \"planDetails\": { \"name\": \"Silver Plan\" },\n        \"amount\": 500,\n        \"dailyRoiPercentage\": 1\n      },\n      \"amount\": 5,\n      \"date\": \"2026-06-08T00:00:00.000Z\",\n      \"status\": \"credited\"\n    }\n  ]\n}"
+          }]
+        },
+        {
+          "name": "Trigger ROI Manually (Dev Only)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "var json = pm.response.json();",
+            "pm.test('Has result', () => pm.expect(json.result).to.be.an('object'));",
+            "console.log('Credited:', json.result.credited, '| Skipped:', json.result.skipped);"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/debug/trigger-roi", "host": ["{{baseUrl}}"], "path": ["debug", "trigger-roi"] }
+          },
+          "response": [
+            {
+              "name": "ROI Credited",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"ROI processing complete\",\n  \"result\": {\n    \"credited\": 1,\n    \"skipped\": 0,\n    \"errors\": 0\n  }\n}"
+            },
+            {
+              "name": "Already Credited Today",
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"success\": true,\n  \"message\": \"ROI processing complete\",\n  \"result\": {\n    \"credited\": 0,\n    \"skipped\": 1,\n    \"errors\": 0\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Referrals",
+      "item": [
+        {
+          "name": "Get Direct Referrals (Level 1)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has referrals', () => pm.expect(pm.response.json().referrals).to.be.an('array'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/referrals/direct", "host": ["{{baseUrl}}"], "path": ["referrals", "direct"] }
+          },
+          "response": [{
+            "name": "Success 200",
+            "status": "OK",
+            "code": 200,
+            "body": "{\n  \"success\": true,\n  \"count\": 2,\n  \"referrals\": [\n    {\n      \"_id\": \"user456\",\n      \"fullName\": \"erewr\",\n      \"email\": \"ayan@gmail.com\",\n      \"mobile\": \"9123456789\",\n      \"accountStatus\": \"active\",\n      \"walletBalance\": 0,\n      \"createdAt\": \"2026-06-07T10:00:00.000Z\"\n    },\n    {\n      \"_id\": \"user789\",\n      \"fullName\": \"Do dicta delectus o\",\n      \"email\": \"abc@gmail.com\",\n      \"mobile\": \"9876543211\",\n      \"accountStatus\": \"active\",\n      \"walletBalance\": 0,\n      \"createdAt\": \"2026-06-07T11:00:00.000Z\"\n    }\n  ]\n}"
+          }]
+        },
+        {
+          "name": "Get Full Referral Tree (5 levels)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has tree', () => pm.expect(pm.response.json().tree).to.be.an('object'));",
+            "pm.test('Tree has children array', () => pm.expect(pm.response.json().tree.children).to.be.an('array'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/referrals/tree", "host": ["{{baseUrl}}"], "path": ["referrals", "tree"] }
+          },
+          "response": [{
+            "name": "Success 200",
+            "status": "OK",
+            "code": 200,
+            "body": "{\n  \"success\": true,\n  \"tree\": {\n    \"userId\": \"64abc123\",\n    \"fullName\": \"Rahul Kumar\",\n    \"level\": 0,\n    \"children\": [\n      {\n        \"userId\": \"user456\",\n        \"fullName\": \"erewr\",\n        \"email\": \"ayan@gmail.com\",\n        \"level\": 1,\n        \"accountStatus\": \"active\",\n        \"children\": [\n          {\n            \"userId\": \"user555\",\n            \"fullName\": \"Esse similique\",\n            \"email\": \"xxx@gmail.com\",\n            \"level\": 2,\n            \"accountStatus\": \"active\",\n            \"children\": []\n          }\n        ]\n      },\n      {\n        \"userId\": \"user789\",\n        \"fullName\": \"Do dicta delectus o\",\n        \"email\": \"abc@gmail.com\",\n        \"level\": 1,\n        \"accountStatus\": \"active\",\n        \"children\": []\n      }\n    ]\n  }\n}"
+          }]
+        },
+        {
+          "name": "Get Referral Income History",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Has records', () => pm.expect(pm.response.json().records).to.be.an('array'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/referrals/income?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["referrals", "income"],
+              "query": [
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          },
+          "response": [{
+            "name": "Success 200",
+            "status": "OK",
+            "code": 200,
+            "body": "{\n  \"success\": true,\n  \"total\": 1,\n  \"page\": 1,\n  \"records\": [\n    {\n      \"_id\": \"ref123abc\",\n      \"recipient\": \"64abc123\",\n      \"generator\": { \"fullName\": \"erewr\", \"email\": \"ayan@gmail.com\" },\n      \"investment\": \"inv789xyz\",\n      \"level\": 1,\n      \"amount\": 25,\n      \"date\": \"2026-06-08T10:30:00.000Z\"\n    }\n  ]\n}"
+          }]
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Server Health Check",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('Status 200', () => pm.response.to.have.status(200));",
+            "pm.test('Status ok', () => pm.expect(pm.response.json().status).to.eql('ok'));"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "http://localhost:5000/health", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["health"] }
+          },
+          "response": [{
+            "name": "Success 200",
+            "status": "OK",
+            "code": 200,
+            "body": "{ \"status\": \"ok\", \"uptime\": 3600.5 }"
+          }]
+        }
+      ]
+    }
+  ]
+}

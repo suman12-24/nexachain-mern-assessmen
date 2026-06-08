@@ -148,7 +148,6 @@ Open http://localhost:3000 in your browser. You should see the NexaChain AI logi
 |---|---|---|
 | `PORT` | Server port | `5000` |
 | `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/nexachain` |
-| `JWT_SECRET` | Secret key for signing JWTs — **change in production** | `your-super-secret-key` |
 | `JWT_EXPIRES_IN` | Token TTL | `7d` |
 | `CLIENT_URL` | Allowed CORS origin | `http://localhost:3000` |
 

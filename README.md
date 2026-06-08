@@ -87,7 +87,7 @@ nexachain/
 ### Step 1 — Clone / Extract
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/suman12-24/nexachain-mern-assessment.git
 cd nexachain
 ```
 
